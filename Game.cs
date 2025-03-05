@@ -10,16 +10,25 @@ namespace DungeonExplorer
 
         public Game()
         {
-            // Initialize the game with one room and one player
-
+            // Initialising the game with one room and one player
+            player = new Player("Hero", 100);
+            currentRoom = new Room("A mysterious, dark, eerie room with stone walls.");
         }
+        
         public void Start()
         {
-            // Change the playing logic into true and populate the while loop
-            bool playing = false;
+            // Changed the playing logic into true and populated the while loop
+            bool playing = true;
             while (playing)
             {
-                // Code your playing logic here
+                Console.WriteLine(currentRoom.GetDescription());
+                Console.WriteLine($"Health: {player.Health}");
+                Console.WriteLine)$"Inventory: {player.InventoryContents()}");
+
+                Console.WriteLine("Choose action: ");
+                Console.WriteLine("1. Pick up the sword");
+                Console.WriteLine("2. Exit the Dungeon");
+                
             }
         }
     }

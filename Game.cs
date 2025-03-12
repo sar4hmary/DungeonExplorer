@@ -10,8 +10,6 @@ namespace DungeonExplorer
     /// </summary>
     internal class Game
     {
-        private Player player;
-        private Room currentRoom;
         private Player _player; // Represents the player in the game
         private Room _currentRoom; // Represents the current room the player is in
         private int _roomNumber; // Tracks the current room number

@@ -74,7 +74,7 @@ namespace DungeonExplorer
                 {
                     // Move to the next room by increasing the room number
                     _roomNumber++;
-                    _currentRoom = new Room(_roomNumber); //Loads new room
+                    _currentRoom = new Room(_roomNumber); // Loads new room
                 }
                 else
                 {

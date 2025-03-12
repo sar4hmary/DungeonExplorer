@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace DungeonExplorer
 {
@@ -42,6 +43,10 @@ namespace DungeonExplorer
 
             // Randomly select an item for the room (or null for an empty room)
             Item = RoomItems[Random.Next(RoomItems.Length)];
+
+            // Assertions
+            Debug.Assert(!string.IsNullOrEmpty(Description), "Room description should never be null or empty.");
+            Debug.Assert(Array.Exists(RoomItems, i => i == Item), "Item must be one of the predefined room items.");
         }
 
         /// <summary>

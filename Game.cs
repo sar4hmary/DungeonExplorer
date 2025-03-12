@@ -1,4 +1,3 @@
-namespace DungeonExplorer
 using System;
 using System.Collections.Generic;
 
@@ -16,8 +15,8 @@ namespace DungeonExplorer
         private bool _playing; // Tracks whether the game is active
 
         /// <summary>
-        /// Initializes the game with a player and starting room.
-        /// Prompts the player for their name and sets up the first room.
+        /// Initialising the game with a player and starting room
+        /// Asking the player for their name and sets up the first room
         /// </summary>
         public Game()
         {
@@ -70,12 +69,12 @@ namespace DungeonExplorer
                 {
                     // Move to the next room by increasing the room number
                     _roomNumber++;
-                    _currentRoom = new Room(_roomNumber);
+                    _currentRoom = new Room(_roomNumber); //Loads new room
                 }
                 else
                 {
                     // If the player chooses to quit, end the game loop
-                    Console.WriteLine("Thanks for playing!");
+                    Console.WriteLine("Adventure Over! Thanks for playing!");
                     _playing = false;
                 }
             }
@@ -92,10 +91,15 @@ namespace DungeonExplorer
             string input;
             do
             {
-                // Read the input from the user and convert it to lowercase
+                // Reads input from user and converts it to lowercase
                 input = Console.ReadLine()?.ToLower();
+                if (!validInputs.Contains(input))
+                {
+                    // Notify user if input is invalid
+                    Console.WriteLine("Invalid choice. Please try again."); 
+                }
             } while (!validInputs.Contains(input)); // Keep asking until the input is valid
-            return input; // Return the valid input
+            return input; // Returns the valid input
         }
     }
 }

@@ -1,4 +1,3 @@
-namespace DungeonExplorer
 using System;
 
 namespace DungeonExplorer

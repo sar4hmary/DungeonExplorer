@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DungeonExplorer
 {
@@ -30,6 +31,10 @@ namespace DungeonExplorer
 
             // Initialize an empty inventory
             _inventory = new List<string>();
+            
+            // Assertions
+            Debug.Assert(Health > 0, "Player health should always be greater than zero.");
+            Debug.Assert(_inventory != null, "Inventory list should never be null.");
         }
 
         /// <summary>

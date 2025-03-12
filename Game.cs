@@ -1,6 +1,6 @@
 using System;
-using System.Media;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DungeonExplorer
 {
@@ -37,6 +37,10 @@ namespace DungeonExplorer
             // Set the initial room number and create the starting room
             _roomNumber = 0;
             _currentRoom = new Room(_roomNumber);
+            
+            // Assertions
+            Debug.Assert(_player != null, "Player should be properly initialised.");
+            Debug.Assert(_currentRoom != null, "Current room should be properly initialised.");
         }
 
         /// <summary>
@@ -78,6 +82,8 @@ namespace DungeonExplorer
                     Console.WriteLine("Adventure Over! Thanks for playing!");
                     _playing = false;
                 }
+                // Assertion
+                Debug.Assert(_currentRoom != null, "Room should be properly initialised after moving.");
             }
         }
 

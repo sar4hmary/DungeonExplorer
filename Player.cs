@@ -1,4 +1,3 @@
-namespace DungeonExplorer
 using System;
 using System.Collections.Generic;
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace DungeonExplorer.Creatures
 {
     ///<summary>

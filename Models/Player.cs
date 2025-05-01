@@ -32,5 +32,12 @@ namespace DungeonExplorer.Models
             var item = Inventory.Items.FirstOrDefault(i => i.Name.Equals(itemName));
             if (item != null) item.Use(this);
         }
+
+        public void UseItem(string itemName)
+        {
+            var item = Inventory.Items.FirstOrDefault(i => i.Name.Equals(itemName));
+            Debug.Assert(item != null, "Item should exist in inventory"); //Debug.assert used
+            item.Use(this);
+        }    
     }
 }

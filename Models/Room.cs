@@ -1,28 +1,14 @@
-using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using DungeonExplorer.Models;
 
-namespace DungeonExplorer
+namespace DungeonExplorer.Models
 {
     public class Room
     {
-        public string Description { get; set; }  //Description of the room
-        public Creature CreatureInRoom { get; set; }  //The creature that resides in this room
+        public string Description { get; }
+        public List<Monster> Monsters { get; } = new List<Monster>();
+        public List<Item> Items { get; } = new List<Item>();
 
-        ///<summary>
-        ///Constructor for the Room class, initialising the room with a description and a creature
-        ///</summary>
-        public Room(string description, Creature creature)
-        {
-            Description = description;
-            CreatureInRoom = creature;
-        }
-
-        ///<summary>
-        ///Returns the description of the room
-        ///</summary>
-        public string GetDescription()
-        {
-            return Description;
-        }
+        public Room(string description) => Description = description;
     }
 }

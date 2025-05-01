@@ -30,5 +30,14 @@ namespace DungeonExplorer.Models
             CurrentRoomIndex = index;
             
         }
+        public void MoveToRoom(int index)
+        {
+            Debug.Assert(index >= 0 && index < Rooms.Count, "Room index out of range");
+            if (Rooms[index].IsLocked)
+            {
+                throw new InvalidOperationException("Room is locked");
+            }
+            CurrentRoomIndex = index;
+        }
     }
 }

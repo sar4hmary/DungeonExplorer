@@ -6,7 +6,7 @@ namespace DungeonExplorer.Models
     ///<summary>
     ///Player class with inventory management
     ///</summary>
-    public class Player : Creature, IDamageable
+    public class Player : Creature
     {
         public Inventory Inventory { get; } = new Inventory();
 

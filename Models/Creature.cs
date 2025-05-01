@@ -39,5 +39,15 @@ namespace DungeonExplorer.Models
         }
 
         public bool IsAlive() => Health > 0;
+
+        public virtual void Attack(Creature target)
+        {
+            Debug.Assert(target != null, "Attack target cannot be null");
+            Debug.Assert(this.IsAlive(), "Dead creatures cannot attack");
+            Debug.Assert(target.IsAlive(), "Cannot attack dead creatures");
+            
+            Console.WriteLine($"{Name} attacks {target.Name} for {Damage} damage!");
+            target.TakeDamage(Damage);
+        }
     }
 }

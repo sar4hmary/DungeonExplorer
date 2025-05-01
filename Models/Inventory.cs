@@ -21,5 +21,11 @@ namespace DungeonExplorer.Models
 
         public void AddItem(Item item) => Items.Add(item);
         public void RemoveItem(int index) => Items.RemoveAt(index);
+
+        public void RemoveItem(int index)
+        {
+            Debug.Assert(index >= 0 && index < Items.Count, "Invalid item index");
+            Items.RemoveAt(index);
+        }
     }
 }

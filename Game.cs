@@ -8,190 +8,221 @@ namespace DungeonExplorer
 {
     public class Game
     {
-        private Player _player = new Player();  //The player character
-        private GameMap _map = new GameMap();   //Manages dungeon rooms and navigation
+        private Player _player = new Player();
+        private GameMap _map = new GameMap();
 
-        ///<summary>
-        ///Main game loop that controls the entire game flow
-        ///</summary>
         public void Start()
         {
-            InitializeGameWorld();  //Set up rooms, monsters and items
+            InitializeGameWorld();
             Console.WriteLine("=== Dungeon Explorer ===");
-            Console.WriteLine("Navigate rooms, battle monsters, and collect items!");
+            Console.WriteLine("Navigate rooms, solve puzzles, find keys, and defeat monsters!");
 
-            //Main game loop will run while player is alive and has rooms to explore
             while (_player.IsAlive() && _map.CurrentRoomIndex < _map.Rooms.Count)
             {
-                Room currentRoom = _map.CurrentRoom;  //Get current room
+                Room currentRoom = _map.CurrentRoom;
                 Console.WriteLine($"\n{currentRoom.Description}");
 
-                //fight all monsters in room
+                HandlePuzzleRoom(currentRoom);
                 BattleMonsters(currentRoom);
 
-                //Only proceed if player survived battles
                 if (_player.IsAlive())
                 {
-                    //collect items in room
                     CollectItems(currentRoom);
 
-                    //move to next room if not last room
-                    if (_player.IsAlive() && currentRoom != _map.Rooms.Last())
+                    if (currentRoom != _map.Rooms.Last())
                     {
-                        Console.WriteLine("\nPress any key to move to the next room...");
-                        Console.ReadKey();  //Pause for player readiness
-                        _map.MoveToRoom(_map.CurrentRoomIndex + 1);  //Advance room
+                        Console.WriteLine("\nPress any key to attempt to move to the next room...");
+                        Console.ReadKey();
+                        MoveToNextRoom();
                     }
                 }
             }
 
-            //Game end message
             Console.WriteLine(_player.IsAlive() 
-                ? "\nYou escaped the dungeon! Victory!" 
+                ? "\nYou conquered the dungeon! Victory!" 
                 : "\nGame Over - You were defeated!");
         }
 
-        ///<summary>
-        ///Handles combat between player and monsters in current room
-        ///</summary>
-        ///<param name="room">The current room with monsters</param>
+        private void MoveToNextRoom()
+        {
+            Room nextRoom = _map.Rooms[_map.CurrentRoomIndex + 1];
+            
+            if (nextRoom.IsLocked)
+            {
+                Console.WriteLine($"\nThe door is locked! You need a {nextRoom.KeyItem}.");
+                
+                if (_player.Inventory.Items.Any(item => item.Name == nextRoom.KeyItem))
+                {
+                    Console.WriteLine($"You used the {nextRoom.KeyItem} to unlock the door!");
+                    nextRoom.IsLocked = false;
+                    _map.MoveToRoom(_map.CurrentRoomIndex + 1);
+                }
+                else
+                {
+                    Console.WriteLine("You don't have the required key!");
+                }
+            }
+            else
+            {
+                _map.MoveToRoom(_map.CurrentRoomIndex + 1);
+            }
+        }
+
+        private void HandlePuzzleRoom(Room room)
+        {
+            if (!room.HasPuzzle) return;
+
+            Console.WriteLine("\nThe runes on the walls begin to glow...");
+            Console.WriteLine("Solve the riddle to proceed:");
+            Console.WriteLine("I speak without a mouth and hear without ears. I have no body but come alive with wind. What am I?");
+            
+            string answer = Console.ReadLine()?.ToLower();
+            if (answer == "echo")
+            {
+                Console.WriteLine("\nThe runes fade! A hidden compartment opens...");
+                room.Items.Add(new Key("Rusty Key", "the iron door"));
+            }
+            else
+            {
+                Console.WriteLine("\nNothing happens... The runes continue to glow.");
+            }
+        }
+
         private void BattleMonsters(Room room)
         {
-            //LINQ query to get only alive monsters 
             var aliveMonsters = room.Monsters.Where(m => m.IsAlive()).ToList();
 
-            //Battle each monster sequentially
             foreach (var monster in aliveMonsters)
             {
                 Console.WriteLine($"\nA {monster.Name} (HP: {monster.Health}) appears!");
 
                 while (monster.IsAlive() && _player.IsAlive())
                 {
-                    //Display combat options
                     Console.WriteLine($"\n[Player HP: {_player.Health}]");
                     Console.WriteLine("1. Attack\n2. Use Item\n3. Flee");
 
-                    //Get validated player input (1-3)
                     int choice = Input.ReadInt("Choose action: ", 1, 3);
 
-                    //Handle player choice
                     switch (choice)
                     {
-                        case 1: //Attack
-                            _player.Attack(monster);  //Player attacks monster
+                        case 1:
+                            _player.Attack(monster);
                             break;
-                            
-                        case 2: //Use item
-                            UseItemMenu();  //Open inventory
+                        case 2:
+                            UseItemMenu();
                             break;
-                            
-                        case 3: //Flee (50% success chance)
-                            if (new Random().Next(2) == 0)  //Random 0 or 1
+                        case 3:
+                            if (new Random().Next(2) == 0)
                             {
                                 Console.WriteLine("You successfully escaped!");
-                                return;  //Exit combat
+                                return;
                             }
                             Console.WriteLine("Escape failed! Monster blocks your path!");
                             break;
                     }
 
-                    //Monster counterattacks if still alive
                     if (monster.IsAlive()) 
                     {
-                        //Dynamic Polymorphism: Dragon has different attack than Goblin
                         monster.Attack(_player);  
                     }
                 }
 
-                //Check if player died during battle
                 if (!_player.IsAlive()) break;
             }
         }
 
-        ///<summary>
-        ///Displays inventory and handles item usage
-        ///</summary>
         private void UseItemMenu()
         {
-            //LINQ queries to filter items by type
-            var weapons = _player.Inventory.GetWeapons();  //Gets all Weapon items
-            var potions = _player.Inventory.Items.OfType<Potion>().ToList();  //Gets all Potions
+            var weapons = _player.Inventory.GetWeapons();
+            var potions = _player.Inventory.Items.OfType<Potion>().ToList();
+            var keys = _player.Inventory.Items.OfType<Key>().ToList();
 
             Console.WriteLine("\n=== INVENTORY ===");
             
-            //Display weapons
             Console.WriteLine("Weapons:");
             for (int i = 0; i < weapons.Count; i++)
                 Console.WriteLine($"{i + 1}. {weapons[i].Name} (+{weapons[i].DamageBoost} DMG)");
 
-            //Display potions
             Console.WriteLine("\nPotions:");
             for (int i = 0; i < potions.Count; i++)
                 Console.WriteLine($"{weapons.Count + i + 1}. {potions[i].Name} (+{potions[i].HealAmount} HP)");
 
-            //Check if inventory is empty
-            if (weapons.Count + potions.Count == 0)
+            Console.WriteLine("\nKeys:");
+            for (int i = 0; i < keys.Count; i++)
+                Console.WriteLine($"{weapons.Count + potions.Count + i + 1}. {keys[i].Name} (for {keys[i].DoorDescription})");
+
+            int totalItems = weapons.Count + potions.Count + keys.Count;
+            if (totalItems == 0)
             {
                 Console.WriteLine("No items available!");
                 return;
             }
 
-            //Get player's item choice (0 to cancel)
-            int choice = Input.ReadInt("Select item (0 to cancel): ", 0, weapons.Count + potions.Count);
-            if (choice == 0) return;  //Player cancelled
+            int choice = Input.ReadInt("Select item (0 to cancel): ", 0, totalItems);
+            if (choice == 0) return;
 
-            //Static Polymorphism: Use either Weapon or Potion via method overloading
             if (choice <= weapons.Count)
-                _player.UseItem(weapons[choice - 1].Name);  //Use weapon
+                _player.UseItem(weapons[choice - 1].Name);
+            else if (choice <= weapons.Count + potions.Count)
+                _player.UseItem(potions[choice - weapons.Count - 1].Name);
             else
-                _player.UseItem(potions[choice - weapons.Count - 1].Name);  //Use potion
+                _player.UseItem(keys[choice - weapons.Count - potions.Count - 1].Name);
         }
 
-        ///<summary>
-        ///Allows player to collect items in the current room
-        ///</summary>
-        ///<param name="room">The current room with items</param>
         private void CollectItems(Room room)
         {
-            //Skip if no items in room
             if (!room.Items.Any()) return;
 
             Console.WriteLine("\nItems in the room:");
-            //ToList() creates copy to avoid modification issues during iteration
-            foreach (var item in room.Items.ToList())  
+            foreach (var item in room.Items.ToList())
             {
                 Console.WriteLine($"- {item.Name}");
                 Console.WriteLine("Take it? (Y/N)");
                 
                 if (Input.ReadYesNo())
                 {
-                    //Interface implementation: ICollectible.Collect()
-                    ((ICollectible)item).Collect(_player);  
-                    room.Items.Remove(item);  //Remove from room
+                    ((ICollectible)item).Collect(_player);
+                    room.Items.Remove(item);
                 }
             }
         }
 
-        ///<summary>
-        ///Initialises the game world with rooms, monsters and items
-        ///</summary>
         private void InitializeGameWorld()
         {
-            //ROOM 1 - Easy difficulty
-            var room1 = new Room("A dark cave with flickering torches...");
-            room1.Monsters.Add(new Goblin());  //Weak enemy
-            room1.Items.Add(new Weapon("Rusty Sword", 5));  //Small damage boost
+            // Room 1 - Entrance
+            var room1 = new Room("A dark cave entrance with flickering torches. There's a musty smell in the air.");
+            room1.Monsters.Add(new Goblin());
+            room1.Items.Add(new Weapon("Rusty Dagger", 3));
 
-            //ROOM 2 - Hard difficulty
-            var room2 = new Room("A fiery dungeon with lava flows...");
-            room2.Monsters.Add(new Dragon());  //Strong enemy with special attack
-            room2.Items.Add(new Potion("Health Potion", 20));  //Healing item
+            // Room 2 - Locked Corridor
+            var room2 = new Room("A damp corridor with an imposing iron door blocking your path.");
+            room2.IsLocked = true;
+            room2.KeyItem = "Rusty Key";
+            room2.Monsters.Add(new Goblin());
+            room2.Monsters.Add(new Goblin());
 
-            //Add rooms to game map
+            // Room 3 - Puzzle Room
+            var room3 = new Room("A circular chamber with glowing runes carved into the stone walls.");
+            room3.HasPuzzle = true;
+            room3.Items.Add(new Potion("Health Potion", 20));
+
+            // Room 4 - Dragon's Lair
+            var room4 = new Room("A massive cavern with bubbling lava pools. The heat is intense.");
+            room4.Monsters.Add(new Dragon());
+            room4.Items.Add(new Weapon("Dragon Slayer", 15));
+            room4.Items.Add(new Key("Golden Key", "the treasure vault"));
+
+            // Room 5 - Treasure Vault
+            var room5 = new Room("The treasure vault! Gold and gems glitter in piles everywhere.");
+            room5.IsLocked = true;
+            room5.KeyItem = "Golden Key";
+            room5.Items.Add(new Potion("Elixir of Life", 50));
+
             _map.Rooms.Add(room1);
             _map.Rooms.Add(room2);
-
-            Console.WriteLine($"Dungeon initialized with {_map.Rooms.Count} rooms.");
+            _map.Rooms.Add(room3);
+            _map.Rooms.Add(room4);
+            _map.Rooms.Add(room5);
         }
     }
 }

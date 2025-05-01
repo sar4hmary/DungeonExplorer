@@ -10,19 +10,12 @@ namespace DungeonExplorer.Models
     public class Room
     {
         public string Description { get; } //The descriptive text displayed when players enter the room
-
-        /// <summary>
-        /// List of monsters currently present in this room
-        /// Uses List<Monster> to enable LINQ operations and easy iteration
-        /// </summary>
         public List<Monster> Monsters { get; } = new List<Monster>();
-
-        /// <summary>
-        /// List of collectible items available in this room
-        /// Uses List<Item> to support polymorphism (Weapons/Potions)
-        /// </summary>
         public List<Item> Items { get; } = new List<Item>();
-
+        public bool IsLocked { get; set; }
+        public string KeyItem { get; set; }
+        public bool HasPuzzle { get; set; }
+        
         public Room(string description) => Description = description; //Constructs a new room with the specified description
         
     }

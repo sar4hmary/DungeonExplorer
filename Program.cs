@@ -17,16 +17,21 @@ namespace DungeonExplorer
         ///</summary>
         static void Main(string[] args)
         {
-            //Creates a new instance of the Game class to start the game
-            Game game = new Game();
-            
-            //Starts the game, which will run the game loop
-            game.Start();
+            Console.WriteLine("=== Dungeon Explorer ===");
+            Console.WriteLine("1. Play Game\n2. Run Tests");
+            int choice = Input.ReadInt("Choose option: ", 1, 2);
 
-            //Prompts the user to press any key to exit once the game is finished
+            if (choice == 1)
+            {
+                Game game = new Game();
+                game.Start();
+            }
+            else
+            {
+                Testing.RunAllTests();
+            }
+
             Console.WriteLine("Press any key to exit...");
-
-            //Waits for the user to press a key before the program ends
             Console.ReadKey();
         }
     }

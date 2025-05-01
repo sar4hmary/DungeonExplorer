@@ -12,7 +12,7 @@ namespace DungeonExplorer.Utilities
             while (true)
             {
                 Console.Write(prompt);
-                if (int.TryParse(Console.ReadLine(), out int result) 
+                if (int.TryParse(Console.ReadLine(), out int result)) 
                 {
                     if (result >= min && result <= max)
                         return result;
